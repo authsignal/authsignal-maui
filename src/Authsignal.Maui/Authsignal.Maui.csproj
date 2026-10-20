@@ -5,8 +5,6 @@
     <UseMaui>true</UseMaui>
     <SingleProject>true</SingleProject>
     <IsAotCompatible>true</IsAotCompatible>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <!-- Only Core and Essentials APIs are used, so apps choose their own Controls version. -->
     <SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Description>Authsignal SDK for .NET MAUI. Wraps the Authsignal iOS and Android SDKs.</Description>

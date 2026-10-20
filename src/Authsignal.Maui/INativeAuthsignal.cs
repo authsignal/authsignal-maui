@@ -1,6 +1,5 @@
 namespace Authsignal.Maui;
 
-// Platform bridge to the native SDK wrappers. Results are JSON payloads or error codes from the native SDKs.
 interface INativeAuthsignal
 {
 	void SetToken(string token);

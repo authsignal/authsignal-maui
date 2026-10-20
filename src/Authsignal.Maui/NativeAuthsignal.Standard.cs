@@ -1,7 +1,6 @@
 #if !ANDROID && !IOS
 namespace Authsignal.Maui;
 
-// Allows referencing the package from shared projects and unit tests. Authsignal is only available on iOS and Android.
 sealed class NativeAuthsignal : INativeAuthsignal
 {
 	public NativeAuthsignal(AuthsignalOptions options) => throw new PlatformNotSupportedException("Authsignal is only supported on iOS and Android.");

@@ -24,7 +24,6 @@ record NativeResult(string? Data, string? ErrorCode, string? Error)
 		}
 	}
 
-	// Adapts a native completion callback to a task. Native calls cannot be interrupted, so cancellation only stops waiting.
 	public static async Task<NativeResult> FromCallback(Action<Action<NativeResult>> start, CancellationToken cancellationToken)
 	{
 		cancellationToken.ThrowIfCancellationRequested();

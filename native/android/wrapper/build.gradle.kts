@@ -27,7 +27,6 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
 }
 
-// Runtime artifacts without Microsoft-maintained NuGet bindings are bundled unbound in the .NET package.
 val bundledGroups = setOf("com.authsignal", "io.ktor", "org.slf4j")
 val bundledModules = setOf(
   "kotlinx-io-core-jvm",

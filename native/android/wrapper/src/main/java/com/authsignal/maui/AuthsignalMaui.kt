@@ -64,7 +64,6 @@ class AuthsignalMaui(
     (context.applicationContext as Application).registerActivityLifecycleCallbacks(ActivityReleaser())
   }
 
-  // Passkey prompts need the current activity, which can change during the app lifecycle.
   private fun passkey(activity: Activity?): AuthsignalPasskey {
     val current = passkey
 
@@ -158,7 +157,6 @@ class AuthsignalMaui(
     }
   }
 
-  // Android has no in-flight passkey request to cancel, matching the Flutter SDK.
   fun passkeyCancel() {}
 
   fun passkeyShouldPromptToCreatePasskey(username: String?, callback: AuthsignalMauiCallback) {
@@ -234,7 +232,6 @@ class AuthsignalMaui(
     }
   }
 
-  // requireUserAuthentication and keychainAccess are iOS-only, matching the Flutter and React Native SDKs.
   fun pushGetCredential(callback: AuthsignalMauiCallback) {
     scope.launch {
       complete(push.getCredential(), callback, ::credentialJson)

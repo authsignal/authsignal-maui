@@ -47,7 +47,6 @@ public partial class MainPage : ContentPage
 	async void OnTotpVerifyClicked(object? sender, EventArgs e) =>
 		Show(await authsignal.Totp.VerifyAsync(CodeEntry.Text ?? ""), DescribeVerification);
 
-	// Send the returned token to your backend and validate it there before trusting the result.
 	static string DescribeVerification(VerifyResponse data) =>
 		data.IsVerified ? "Verified. Validate the returned token on your backend." : $"Not verified: {data.FailureReason}";
 

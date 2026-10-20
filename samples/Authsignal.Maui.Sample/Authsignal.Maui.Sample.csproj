@@ -17,7 +17,6 @@
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 
-	<!-- Simulator builds embed the passkey entitlements without a provisioning profile. Device builds still need one. -->
 	<PropertyGroup Condition="!$(RuntimeIdentifier.StartsWith('ios-'))">
 		<CodesignRequireProvisioningProfile>false</CodesignRequireProvisioningProfile>
 	</PropertyGroup>

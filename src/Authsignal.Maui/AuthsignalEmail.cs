@@ -1,23 +1,11 @@
 namespace Authsignal.Maui;
 
-/// <summary>
-/// Email OTP enrollment and verification.
-/// </summary>
 public interface IAuthsignalEmail
 {
-	/// <summary>
-	/// Enrolls an email address and sends a verification code to it.
-	/// </summary>
 	Task<AuthsignalResponse<EnrollResponse>> EnrollAsync(string email, CancellationToken cancellationToken = default);
 
-	/// <summary>
-	/// Sends a verification code to the user's enrolled email address.
-	/// </summary>
 	Task<AuthsignalResponse<ChallengeResponse>> ChallengeAsync(CancellationToken cancellationToken = default);
 
-	/// <summary>
-	/// Verifies the code sent by email.
-	/// </summary>
 	Task<AuthsignalResponse<VerifyResponse>> VerifyAsync(string code, CancellationToken cancellationToken = default);
 }
 

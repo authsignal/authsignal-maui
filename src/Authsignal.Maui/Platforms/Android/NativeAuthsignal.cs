@@ -14,7 +14,6 @@ sealed class NativeAuthsignal(AuthsignalOptions options) : INativeAuthsignal
 	public Task<NativeResult> GetDeviceIdAsync(CancellationToken cancellationToken) =>
 		Invoke(callback => native.Value.GetDeviceId(callback), cancellationToken);
 
-	// The native SDK returns an error response when no activity is available.
 	public Task<NativeResult> PasskeySignUpAsync(string? token, string? username, string? displayName, bool ignorePasskeyAlreadyExistsError, bool syncCredentials, CancellationToken cancellationToken) =>
 		Invoke(callback => native.Value.PasskeySignUp(Platform.CurrentActivity, token, username, displayName, ignorePasskeyAlreadyExistsError, syncCredentials, callback), cancellationToken);
 

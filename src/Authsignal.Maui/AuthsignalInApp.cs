@@ -1,18 +1,9 @@
 namespace Authsignal.Maui;
 
-/// <summary>
-/// In-app and PIN verification with a device credential.
-/// </summary>
 public interface IAuthsignalInApp
 {
-	/// <summary>
-	/// Gets the in-app credential stored on this device. <see cref="AuthsignalResponse{T}.Data"/> is null when there is none.
-	/// </summary>
 	Task<AuthsignalResponse<AppCredential?>> GetCredentialAsync(string? username = null, CancellationToken cancellationToken = default);
 
-	/// <summary>
-	/// Creates an in-app credential on this device. <paramref name="requireUserAuthentication"/> and <paramref name="keychainAccess"/> apply on iOS only.
-	/// </summary>
 	Task<AuthsignalResponse<AppCredential>> AddCredentialAsync(
 		string? token = null,
 		bool requireUserAuthentication = false,
@@ -21,34 +12,16 @@ public interface IAuthsignalInApp
 		bool performAttestation = false,
 		CancellationToken cancellationToken = default);
 
-	/// <summary>
-	/// Removes the in-app credential from this device.
-	/// </summary>
 	Task<AuthsignalResponse<bool>> RemoveCredentialAsync(string? username = null, CancellationToken cancellationToken = default);
 
-	/// <summary>
-	/// Verifies the user with the in-app credential on this device.
-	/// </summary>
 	Task<AuthsignalResponse<InAppVerifyResponse>> VerifyAsync(string? action = null, string? username = null, CancellationToken cancellationToken = default);
 
-	/// <summary>
-	/// Creates a PIN-protected in-app credential.
-	/// </summary>
 	Task<AuthsignalResponse<AppCredential>> CreatePinAsync(string pin, string username, string? token = null, CancellationToken cancellationToken = default);
 
-	/// <summary>
-	/// Verifies a PIN and, if correct, the in-app credential.
-	/// </summary>
 	Task<AuthsignalResponse<VerifyPinResponse>> VerifyPinAsync(string pin, string username, string? action = null, CancellationToken cancellationToken = default);
 
-	/// <summary>
-	/// Deletes a PIN and its in-app credential.
-	/// </summary>
 	Task<AuthsignalResponse<bool>> DeletePinAsync(string username, CancellationToken cancellationToken = default);
 
-	/// <summary>
-	/// Gets the usernames that have a PIN on this device.
-	/// </summary>
 	Task<AuthsignalResponse<string[]>> GetAllPinUsernamesAsync(CancellationToken cancellationToken = default);
 }
 
