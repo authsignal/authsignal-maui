@@ -1,0 +1,71 @@
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+categories:
+  - title: "Breaking changes"
+    labels:
+      - "breaking"
+      - "major"
+  - title: "New features"
+    labels:
+      - "feature"
+      - "enhancement"
+  - title: "Bug fixes"
+    labels:
+      - "fix"
+      - "bugfix"
+      - "bug"
+  - title: "Maintenance"
+    labels:
+      - "chore"
+      - "maintenance"
+  - title: "Documentation"
+    labels:
+      - "documentation"
+  - title: "Dependencies"
+    collapse-after: 5
+    labels:
+      - "dependencies"
+
+change-template: "- $TITLE (#$NUMBER)"
+change-title-escapes: '\<*_&'
+version-resolver:
+  major:
+    labels:
+      - "major"
+      - "breaking"
+  minor:
+    labels:
+      - "minor"
+      - "feature"
+      - "enhancement"
+  patch:
+    labels:
+      - "patch"
+      - "fix"
+      - "bugfix"
+      - "bug"
+  default: patch
+
+sort-by: "merged_at"
+sort-direction: "descending"
+
+exclude-labels:
+  - "skip-changelog"
+
+autolabeler:
+  - label: "documentation"
+    files:
+      - "*.md"
+  - label: "bug"
+    branch:
+      - '/fix\/.+/'
+    title:
+      - "/fix/i"
+  - label: "feature"
+    branch:
+      - '/feature\/.+/'
+
+template: |
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION

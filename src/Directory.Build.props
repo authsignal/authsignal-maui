@@ -1,0 +1,23 @@
+<Project>
+
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <Authors>Authsignal</Authors>
+    <Company>Authsignal</Company>
+    <Copyright>Copyright (c) Authsignal</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/authsignal/authsignal-maui</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/authsignal/authsignal-maui</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>authsignal;authentication;passkeys;mfa;maui</PackageTags>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <NuGetLockFilePath Condition="'$(RuntimeIdentifier)$(RuntimeIdentifiers)' != ''">obj/packages.lock.json</NuGetLockFilePath>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>

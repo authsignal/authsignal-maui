@@ -1,0 +1,9 @@
+<Project>
+
+  <Target Name="_ExcludeDependencyNativeLibraries" BeforeTargets="_CreateAar">
+    <ItemGroup>
+      <EmbeddedNativeLibrary Remove="@(EmbeddedNativeLibrary)" />
+    </ItemGroup>
+  </Target>
+
+</Project>
