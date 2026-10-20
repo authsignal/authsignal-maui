@@ -1,0 +1,70 @@
+name: Publish to NuGet
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: macos-26
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.3.app
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - run: dotnet workload install maui-ios maui-android --version 10.0.202
+
+      - name: Check tag matches package version
+        if: github.event_name == 'release'
+        run: |
+          package_version=$(sed -nE 's/.*<Version>[[:space:]]*([^<[:space:]]+)[[:space:]]*<\/Version>.*/\1/p' src/Directory.Build.props | head -n1)
+          case "$GITHUB_REF_NAME" in
+            v*) expected="${GITHUB_REF_NAME#v}" ;;
+            *) echo "::error::release tag ($GITHUB_REF_NAME) must start with 'v'"; exit 1 ;;
+          esac
+          echo "package: $package_version"
+          echo "tag: $expected"
+          if [ "$package_version" != "$expected" ]; then
+            echo "::error::Directory.Build.props <Version> ($package_version) does not match release tag ($expected)"
+            exit 1
+          fi
+
+      - run: native/ios/build.sh
+
+      - run: native/android/build.sh
+
+      - run: dotnet restore tests/Authsignal.Maui.Tests --locked-mode
+
+      - run: dotnet test --project tests/Authsignal.Maui.Tests --configuration Release --no-restore
+
+      - name: Pack
+        run: |
+          for project in Authsignal.Maui.Binding.Android Authsignal.Maui.Binding.iOS Authsignal.Maui; do
+            dotnet restore src/$project --locked-mode
+            dotnet pack src/$project -c Release -o out --no-restore -p:ContinuousIntegrationBuild=true
+          done
+
+      - name: NuGet login (OIDC -> temp API key)
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - run: dotnet nuget push "out/*.nupkg" --api-key "${{ steps.nuget-login.outputs.NUGET_API_KEY }}" --source https://api.nuget.org/v3/index.json --skip-duplicate

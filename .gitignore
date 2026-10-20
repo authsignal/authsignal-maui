@@ -1,0 +1,9 @@
+bin/
+obj/
+build/
+.gradle/
+local.properties
+.swiftpm/
+.build/
+*.user
+.DS_Store

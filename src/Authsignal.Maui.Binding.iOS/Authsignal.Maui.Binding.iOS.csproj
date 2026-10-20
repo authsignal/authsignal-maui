@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-ios</TargetFramework>
+    <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+    <IsBindingProject>true</IsBindingProject>
+    <NoBindingEmbedding>true</NoBindingEmbedding>
+    <Description>Native iOS binding used by Authsignal.Maui. Reference Authsignal.Maui instead.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ObjcBindingApiDefinition Include="ApiDefinition.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <NativeReference Include="../../native/ios/build/AuthsignalMaui.xcframework">
+      <Kind>Framework</Kind>
+      <Frameworks>AuthenticationServices CryptoKit DeviceCheck Security</Frameworks>
+    </NativeReference>
+  </ItemGroup>
+
+</Project>

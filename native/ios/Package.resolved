@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "authsignal-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/authsignal/authsignal-ios",
+      "state" : {
+        "revision" : "b3e5bbd44078501bacda91d6d93790ad876eef44",
+        "version" : "2.13.3"
+      }
+    }
+  ],
+  "version" : 2
+}

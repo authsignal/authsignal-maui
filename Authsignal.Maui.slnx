@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/Authsignal.Maui.Sample/Authsignal.Maui.Sample.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Authsignal.Maui.Binding.Android/Authsignal.Maui.Binding.Android.csproj" />
+    <Project Path="src/Authsignal.Maui.Binding.iOS/Authsignal.Maui.Binding.iOS.csproj" />
+    <Project Path="src/Authsignal.Maui/Authsignal.Maui.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Authsignal.Maui.Tests/Authsignal.Maui.Tests.csproj" />
+  </Folder>
+</Solution>

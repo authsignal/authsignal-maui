@@ -1,0 +1,11 @@
+<Project>
+
+  <!-- These libraries ship no native libraries of their own. Without this, native libraries from NuGet dependencies
+       (such as AndroidX DataStore) are embedded in each generated .aar and duplicated in apps (XA4301). -->
+  <Target Name="_ExcludeDependencyNativeLibraries" BeforeTargets="_CreateAar">
+    <ItemGroup>
+      <EmbeddedNativeLibrary Remove="@(EmbeddedNativeLibrary)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

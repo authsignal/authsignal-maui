@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Authsignal.Maui.Sample.MainPage"
+             Title="Authsignal">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+            <Label Text="Token from your backend's track call" />
+            <Entry x:Name="TokenEntry" Placeholder="Token" />
+            <Button Text="Set token" Clicked="OnSetTokenClicked" />
+
+            <Label Text="Passkeys" Style="{StaticResource SubHeadline}" />
+            <Entry x:Name="UsernameEntry" Placeholder="Username" />
+            <Button Text="Create passkey" Clicked="OnPasskeySignUpClicked" />
+            <Button Text="Sign in with passkey" Clicked="OnPasskeySignInClicked" />
+
+            <Label Text="One-time codes" Style="{StaticResource SubHeadline}" />
+            <Entry x:Name="EmailEntry" Placeholder="Email" Keyboard="Email" />
+            <Button Text="Enroll email" Clicked="OnEmailEnrollClicked" />
+            <Button Text="Send email code" Clicked="OnEmailChallengeClicked" />
+            <Entry x:Name="PhoneEntry" Placeholder="Phone number" Keyboard="Telephone" />
+            <Button Text="Enroll phone" Clicked="OnSmsEnrollClicked" />
+            <Button Text="Send SMS code" Clicked="OnSmsChallengeClicked" />
+            <Button Text="Enroll authenticator app" Clicked="OnTotpEnrollClicked" />
+            <Entry x:Name="CodeEntry" Placeholder="Code" Keyboard="Numeric" />
+            <Button Text="Verify email code" Clicked="OnEmailVerifyClicked" />
+            <Button Text="Verify SMS code" Clicked="OnSmsVerifyClicked" />
+            <Button Text="Verify authenticator app code" Clicked="OnTotpVerifyClicked" />
+
+            <Label x:Name="ResultLabel" LineBreakMode="WordWrap" />
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
