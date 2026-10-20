@@ -17,13 +17,13 @@ sealed class NativeAuthsignal(AuthsignalOptions options) : INativeAuthsignal
 	public Task<NativeResult> PasskeySignUpAsync(string? token, string? username, string? displayName, bool ignorePasskeyAlreadyExistsError, bool syncCredentials, CancellationToken cancellationToken) =>
 		Invoke(callback => native.Value.PasskeySignUp(Platform.CurrentActivity, token, username, displayName, ignorePasskeyAlreadyExistsError, syncCredentials, callback), cancellationToken);
 
-	public Task<NativeResult> PasskeySignInAsync(string? action, string? token, bool preferImmediatelyAvailableCredentials, bool syncCredentials, CancellationToken cancellationToken) =>
+	public Task<NativeResult> PasskeySignInAsync(string? action, string? token, bool autofill, bool preferImmediatelyAvailableCredentials, bool syncCredentials, CancellationToken cancellationToken) =>
 		Invoke(callback => native.Value.PasskeySignIn(Platform.CurrentActivity, action, token, preferImmediatelyAvailableCredentials, syncCredentials, callback), cancellationToken);
 
 	public void PasskeyCancel() => native.Value.PasskeyCancel();
 
 	public Task<NativeResult> PasskeyShouldPromptToCreatePasskeyAsync(string? username, CancellationToken cancellationToken) =>
-		Invoke(callback => native.Value.PasskeyShouldPromptToCreatePasskey(username, callback), cancellationToken);
+		Invoke(callback => native.Value.PasskeyShouldPromptToCreatePasskey(Platform.CurrentActivity, username, callback), cancellationToken);
 
 	public Task<NativeResult> EmailEnrollAsync(string email, CancellationToken cancellationToken) =>
 		Invoke(callback => native.Value.EmailEnroll(email, callback), cancellationToken);

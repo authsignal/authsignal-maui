@@ -21,20 +21,6 @@ android {
   }
 }
 
-dependencies {
-  implementation("com.authsignal:authsignal-android:4.3.2")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-}
-
-val bundledGroups = setOf("com.authsignal", "io.ktor", "org.slf4j")
-val bundledModules = setOf(
-  "kotlinx-io-core-jvm",
-  "kotlinx-io-bytestring-jvm",
-  "kotlinx-serialization-json-io-jvm",
-  "kotlinx-coroutines-slf4j",
-)
-
 val bundled: Configuration by configurations.creating {
   isCanBeConsumed = false
   isCanBeResolved = true
@@ -45,10 +31,21 @@ val bundled: Configuration by configurations.creating {
 }
 
 dependencies {
+  implementation("com.authsignal:authsignal-android:4.3.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
   bundled("com.authsignal:authsignal-android:4.3.2")
 }
 
-tasks.register<Copy>("copyBundledDependencies") {
+val bundledGroups = setOf("com.authsignal", "io.ktor", "org.slf4j")
+val bundledModules = setOf(
+  "kotlinx-io-core-jvm",
+  "kotlinx-io-bytestring-jvm",
+  "kotlinx-serialization-json-io-jvm",
+  "kotlinx-coroutines-slf4j",
+)
+
+tasks.register<Sync>("copyBundledDependencies") {
   from(provider {
     bundled.resolvedConfiguration.resolvedArtifacts
       .filter { it.moduleVersion.id.group in bundledGroups || it.moduleVersion.id.name in bundledModules }

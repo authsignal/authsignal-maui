@@ -16,8 +16,8 @@ sealed class NativeAuthsignal(AuthsignalOptions options) : INativeAuthsignal
 	public Task<NativeResult> PasskeySignUpAsync(string? token, string? username, string? displayName, bool ignorePasskeyAlreadyExistsError, bool syncCredentials, CancellationToken cancellationToken) =>
 		Invoke(completion => native.PasskeySignUp(token, username, displayName, ignorePasskeyAlreadyExistsError, syncCredentials, completion), cancellationToken);
 
-	public Task<NativeResult> PasskeySignInAsync(string? action, string? token, bool preferImmediatelyAvailableCredentials, bool syncCredentials, CancellationToken cancellationToken) =>
-		Invoke(completion => native.PasskeySignIn(action, token, preferImmediatelyAvailableCredentials, syncCredentials, completion), cancellationToken);
+	public Task<NativeResult> PasskeySignInAsync(string? action, string? token, bool autofill, bool preferImmediatelyAvailableCredentials, bool syncCredentials, CancellationToken cancellationToken) =>
+		Invoke(completion => native.PasskeySignIn(action, token, autofill, preferImmediatelyAvailableCredentials, syncCredentials, completion), cancellationToken);
 
 	public void PasskeyCancel() => native.PasskeyCancel();
 

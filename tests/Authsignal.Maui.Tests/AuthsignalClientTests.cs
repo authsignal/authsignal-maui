@@ -22,7 +22,7 @@ public class AuthsignalClientTests
 		Assert.Equal("a", response.Data.UserAuthenticatorId);
 		Assert.Equal("n", response.Data.Username);
 		Assert.Equal("d", response.Data.DisplayName);
-		Assert.Equal("passkeySignIn:signIn::True:False", Assert.Single(native.Calls));
+		Assert.Equal("passkeySignIn:signIn::False:True:False", Assert.Single(native.Calls));
 	}
 
 	[Fact]
@@ -190,6 +190,35 @@ public class AuthsignalClientTests
 	}
 
 	[Fact]
+	public async Task PassesAutofill()
+	{
+		native.Result = new("{\"isVerified\":true}", null, null);
+
+		await Client.Passkey.SignInAsync(autofill: true, cancellationToken: TestContext.Current.CancellationToken);
+
+		Assert.Equal("passkeySignIn:::True:True:False", Assert.Single(native.Calls));
+	}
+
+	[Fact]
+	public async Task CancellingPasskeySignInCancelsNativeRequest()
+	{
+		native.Pending = new TaskCompletionSource<NativeResult>();
+		using var cancellation = new CancellationTokenSource();
+
+		var task = Client.Passkey.SignInAsync(action: "signIn", cancellationToken: cancellation.Token);
+		cancellation.Cancel();
+
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(() => task);
+		Assert.Equal(1, native.CancelCount);
+	}
+
+	[Fact]
+	public void UseAuthsignalRejectsMissingTenantId()
+	{
+		Assert.Throws<ArgumentException>(() => MauiApp.CreateBuilder().UseAuthsignal(_ => { }));
+	}
+
+	[Fact]
 	public void CancelsPasskeyRequest()
 	{
 		Client.Passkey.Cancel();
@@ -248,11 +277,12 @@ public class AuthsignalClientTests
 	[Fact]
 	public async Task DecodesPushChallengeWithCustomData()
 	{
-		native.Result = new("{\"challengeId\":\"ch\",\"actionCode\":\"signIn\",\"ipAddress\":\"1.2.3.4\",\"expiresAt\":1792431350,\"custom\":{\"amount\":42,\"nested\":{\"a\":true}},\"user\":{\"custom\":{\"tier\":\"gold\"}}}", null, null);
+		native.Result = new("{\"challengeId\":\"ch\",\"userId\":\"u\",\"actionCode\":\"signIn\",\"ipAddress\":\"1.2.3.4\",\"expiresAt\":1792431350,\"custom\":{\"amount\":42,\"nested\":{\"a\":true}},\"user\":{\"custom\":{\"tier\":\"gold\"}}}", null, null);
 
 		var response = await Client.Push.GetChallengeAsync(TestContext.Current.CancellationToken);
 
 		Assert.Equal("ch", response.Data!.ChallengeId);
+		Assert.Equal("u", response.Data.UserId);
 		Assert.Equal(1792431350, response.Data.ExpiresAt);
 		Assert.Equal(42, response.Data.Custom!["amount"].GetInt32());
 		Assert.True(response.Data.Custom["nested"].GetProperty("a").GetBoolean());

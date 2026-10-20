@@ -51,5 +51,5 @@ public partial class MainPage : ContentPage
 		data.IsVerified ? "Verified. Validate the returned token on your backend." : $"Not verified: {data.FailureReason}";
 
 	void Show<T>(AuthsignalResponse<T> response, Func<T, string> describe) =>
-		ResultLabel.Text = response.Data is { } data ? describe(data) : $"Error: {response.ErrorCode} {response.Error}";
+		ResultLabel.Text = response.Data is { } data ? describe(data) : response.ErrorCode is null ? "Done." : $"Error: {response.ErrorCode} {response.Error}";
 }

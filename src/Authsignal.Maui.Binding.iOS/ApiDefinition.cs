@@ -24,8 +24,8 @@ interface AuthsignalMaui
 	[Export("passkeySignUpWithToken:username:displayName:ignorePasskeyAlreadyExistsError:syncCredentials:completion:")]
 	void PasskeySignUp([NullAllowed] string token, [NullAllowed] string username, [NullAllowed] string displayName, bool ignorePasskeyAlreadyExistsError, bool syncCredentials, AuthsignalMauiCompletion completion);
 
-	[Export("passkeySignInWithAction:token:preferImmediatelyAvailableCredentials:syncCredentials:completion:")]
-	void PasskeySignIn([NullAllowed] string action, [NullAllowed] string token, bool preferImmediatelyAvailableCredentials, bool syncCredentials, AuthsignalMauiCompletion completion);
+	[Export("passkeySignInWithAction:token:autofill:preferImmediatelyAvailableCredentials:syncCredentials:completion:")]
+	void PasskeySignIn([NullAllowed] string action, [NullAllowed] string token, bool autofill, bool preferImmediatelyAvailableCredentials, bool syncCredentials, AuthsignalMauiCompletion completion);
 
 	[Export("passkeyCancel")]
 	void PasskeyCancel();

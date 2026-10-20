@@ -13,7 +13,7 @@ sealed class NativeAuthsignal : INativeAuthsignal
 
 	public Task<NativeResult> PasskeySignUpAsync(string? token, string? username, string? displayName, bool ignorePasskeyAlreadyExistsError, bool syncCredentials, CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
 
-	public Task<NativeResult> PasskeySignInAsync(string? action, string? token, bool preferImmediatelyAvailableCredentials, bool syncCredentials, CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
+	public Task<NativeResult> PasskeySignInAsync(string? action, string? token, bool autofill, bool preferImmediatelyAvailableCredentials, bool syncCredentials, CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
 
 	public void PasskeyCancel() => throw new PlatformNotSupportedException();
 

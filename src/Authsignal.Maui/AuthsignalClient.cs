@@ -57,7 +57,7 @@ public sealed class AuthsignalClient : IAuthsignalClient
 		return response.Data ?? throw new InvalidOperationException("Unable to get device ID.");
 	}
 
-	static AuthsignalOptions Validate(AuthsignalOptions options)
+	internal static AuthsignalOptions Validate(AuthsignalOptions options)
 	{
 		ArgumentNullException.ThrowIfNull(options);
 		ArgumentException.ThrowIfNullOrWhiteSpace(options.TenantId, nameof(options.TenantId));

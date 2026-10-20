@@ -176,6 +176,7 @@
         "contentHash": "6MVR9wsKgfN25AuEL/KzDLd5x8TpuBrC0DRvlUq2Ddi0WdO1q0B9VsTePJF8mdDmdLybo4h/F5F59kfOTPzIXA=="
       }
     },
+    "net10.0/iossimulator-arm64": {},
     "net10.0-android36.0": {
       "Microsoft.Maui.Controls": {
         "type": "Direct",
@@ -1921,6 +1922,7 @@
         }
       }
     },
+    "net10.0-android36.0/iossimulator-arm64": {},
     "net10.0-ios26.0": {
       "Microsoft.Maui.Controls": {
         "type": "Direct",
@@ -2098,6 +2100,7 @@
       "authsignal.maui.binding.ios": {
         "type": "Project"
       }
-    }
+    },
+    "net10.0-ios26.0/iossimulator-arm64": {}
   }
 }

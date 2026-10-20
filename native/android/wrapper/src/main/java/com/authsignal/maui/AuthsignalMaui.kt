@@ -1,9 +1,7 @@
 package com.authsignal.maui
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
-import android.os.Bundle
 import com.authsignal.AuthsignalRequestMetadata
 import com.authsignal.DeviceCache
 import com.authsignal.TokenCache
@@ -22,6 +20,7 @@ import com.authsignal.qr.AuthsignalQRCode
 import com.authsignal.sms.AuthsignalSMS
 import com.authsignal.totp.AuthsignalTOTP
 import com.authsignal.whatsapp.AuthsignalWhatsApp
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -49,8 +48,7 @@ class AuthsignalMaui(
   private val push = AuthsignalPush(tenantID, baseURL, context.applicationContext)
   private val qr = AuthsignalQRCode(tenantID, baseURL, context.applicationContext)
   private val inapp = AuthsignalInApp(tenantID, baseURL, context.applicationContext)
-  private var passkey: AuthsignalPasskey? = null
-  private var passkeyActivity: Activity? = null
+  private val passkeySupport by lazy { passkey(null) }
 
   init {
     AuthsignalRequestMetadata.setWrapperSDK(
@@ -60,37 +58,20 @@ class AuthsignalMaui(
     )
 
     DeviceCache.shared.initialize(context.applicationContext, deviceID)
-
-    (context.applicationContext as Application).registerActivityLifecycleCallbacks(ActivityReleaser())
   }
 
-  private fun passkey(activity: Activity?): AuthsignalPasskey {
-    val current = passkey
+  private fun passkey(activity: Activity?) = AuthsignalPasskey(tenantID, baseURL, activity, deviceID)
 
-    if (current != null && passkeyActivity === activity) {
-      return current
-    }
-
-    return AuthsignalPasskey(tenantID, baseURL, activity, deviceID).also {
-      passkey = it
-      passkeyActivity = activity
-    }
-  }
-
-  private inner class ActivityReleaser : Application.ActivityLifecycleCallbacks {
-    override fun onActivityDestroyed(activity: Activity) {
-      if (activity === passkeyActivity) {
-        passkey = null
-        passkeyActivity = null
+  private fun run(callback: AuthsignalMauiCallback, block: suspend () -> Unit) {
+    scope.launch {
+      try {
+        block()
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        callback.onComplete(null, "unexpected_error", e.message)
       }
     }
-
-    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
-    override fun onActivityStarted(activity: Activity) {}
-    override fun onActivityResumed(activity: Activity) {}
-    override fun onActivityPaused(activity: Activity) {}
-    override fun onActivityStopped(activity: Activity) {}
-    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
   }
 
   fun setToken(token: String) {
@@ -98,12 +79,12 @@ class AuthsignalMaui(
   }
 
   fun getDeviceId(callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       callback.onComplete(JSONObject.quote(DeviceCache.shared.getDefaultDeviceId()), null, null)
     }
   }
 
-  fun passkeyIsSupported(): Boolean = (passkey ?: passkey(null)).isSupported()
+  fun passkeyIsSupported(): Boolean = passkeySupport.isSupported()
 
   fun passkeySignUp(
     activity: Activity?,
@@ -114,7 +95,7 @@ class AuthsignalMaui(
     syncCredentials: Boolean,
     callback: AuthsignalMauiCallback,
   ) {
-    scope.launch {
+    run(callback) {
       val response = passkey(activity).signUp(
         token = token,
         username = username,
@@ -137,7 +118,7 @@ class AuthsignalMaui(
     syncCredentials: Boolean,
     callback: AuthsignalMauiCallback,
   ) {
-    scope.launch {
+    run(callback) {
       val response = passkey(activity).signIn(
         action = action,
         token = token,
@@ -159,52 +140,52 @@ class AuthsignalMaui(
 
   fun passkeyCancel() {}
 
-  fun passkeyShouldPromptToCreatePasskey(username: String?, callback: AuthsignalMauiCallback) {
-    scope.launch {
-      val response = passkey(null).shouldPromptToCreatePasskey(username)
+  fun passkeyShouldPromptToCreatePasskey(activity: Activity?, username: String?, callback: AuthsignalMauiCallback) {
+    run(callback) {
+      val response = passkey(activity).shouldPromptToCreatePasskey(username)
 
       callback.onComplete((response.data ?: false).toString(), null, null)
     }
   }
 
   fun emailEnroll(emailAddress: String, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(email.enroll(emailAddress), callback, ::enrollJson)
     }
   }
 
   fun emailChallenge(callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(email.challenge(), callback, ::challengeJson)
     }
   }
 
   fun emailVerify(code: String, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(email.verify(code), callback, ::verifyJson)
     }
   }
 
   fun smsEnroll(phoneNumber: String, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(sms.enroll(phoneNumber), callback, ::enrollJson)
     }
   }
 
   fun smsChallenge(callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(sms.challenge(), callback, ::challengeJson)
     }
   }
 
   fun smsVerify(code: String, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(sms.verify(code), callback, ::verifyJson)
     }
   }
 
   fun totpEnroll(callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(totp.enroll(), callback) {
         JSONObject()
           .put("userAuthenticatorId", it.userAuthenticatorId)
@@ -215,55 +196,55 @@ class AuthsignalMaui(
   }
 
   fun totpVerify(code: String, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(totp.verify(code), callback, ::verifyJson)
     }
   }
 
   fun whatsappChallenge(callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(whatsapp.challenge(), callback, ::challengeJson)
     }
   }
 
   fun whatsappVerify(code: String, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(whatsapp.verify(code), callback, ::verifyJson)
     }
   }
 
   fun pushGetCredential(callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(push.getCredential(), callback, ::credentialJson)
     }
   }
 
   fun pushAddCredential(token: String?, performAttestation: Boolean, pushToken: String?, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(push.addCredential(token = token, performAttestation = performAttestation, pushToken = pushToken), callback, ::credentialJson)
     }
   }
 
   fun pushRemoveCredential(callback: AuthsignalMauiCallback) {
-    scope.launch {
-      complete(push.removeCredential(), callback) { it }
+    run(callback) {
+      complete(falseIfMissing(push.removeCredential()), callback) { it }
     }
   }
 
   fun pushGetChallenge(callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(push.getChallenge(), callback) { it?.let(::challengeJson) ?: JSONObject.NULL }
     }
   }
 
   fun pushUpdateChallenge(challengeId: String, approved: Boolean, verificationCode: String?, callback: AuthsignalMauiCallback) {
-    scope.launch {
-      complete(push.updateChallenge(challengeId, approved, verificationCode), callback) { it }
+    run(callback) {
+      complete(notFoundIfMissing(push.updateChallenge(challengeId, approved, verificationCode)), callback) { it }
     }
   }
 
   fun pushUpdateCredential(pushToken: String?, resetExpiry: Boolean, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(push.updateCredential(pushToken, resetExpiry), callback) {
         JSONObject()
           .put("userAuthenticatorId", it.userAuthenticatorId)
@@ -276,26 +257,26 @@ class AuthsignalMaui(
   }
 
   fun qrGetCredential(callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(qr.getCredential(), callback, ::credentialJson)
     }
   }
 
   fun qrAddCredential(token: String?, performAttestation: Boolean, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(qr.addCredential(token = token, performAttestation = performAttestation), callback, ::credentialJson)
     }
   }
 
   fun qrRemoveCredential(callback: AuthsignalMauiCallback) {
-    scope.launch {
-      complete(qr.removeCredential(), callback) { it }
+    run(callback) {
+      complete(falseIfMissing(qr.removeCredential()), callback) { it }
     }
   }
 
   fun qrClaimChallenge(challengeId: String, callback: AuthsignalMauiCallback) {
-    scope.launch {
-      complete(qr.claimChallenge(challengeId), callback) {
+    run(callback) {
+      complete(notFoundIfMissing(qr.claimChallenge(challengeId)), callback) {
         JSONObject()
           .put("success", it.success)
           .put("userAgent", it.userAgent)
@@ -309,31 +290,31 @@ class AuthsignalMaui(
   }
 
   fun qrUpdateChallenge(challengeId: String, approved: Boolean, verificationCode: String?, callback: AuthsignalMauiCallback) {
-    scope.launch {
-      complete(qr.updateChallenge(challengeId, approved, verificationCode), callback) { it }
+    run(callback) {
+      complete(notFoundIfMissing(qr.updateChallenge(challengeId, approved, verificationCode)), callback) { it }
     }
   }
 
   fun inappGetCredential(username: String?, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(inapp.getCredential(username), callback, ::credentialJson)
     }
   }
 
   fun inappAddCredential(token: String?, username: String?, performAttestation: Boolean, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(inapp.addCredential(token = token, username = username, performAttestation = performAttestation), callback, ::credentialJson)
     }
   }
 
   fun inappRemoveCredential(username: String?, callback: AuthsignalMauiCallback) {
-    scope.launch {
-      complete(inapp.removeCredential(username = username), callback) { it }
+    run(callback) {
+      complete(falseIfMissing(inapp.removeCredential(username = username)), callback) { it }
     }
   }
 
   fun inappVerify(action: String?, username: String?, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(inapp.verify(action, username), callback) {
         JSONObject()
           .put("token", it.token)
@@ -345,13 +326,13 @@ class AuthsignalMaui(
   }
 
   fun inappCreatePin(pin: String, username: String, token: String?, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(inapp.createPin(pin, username, token), callback, ::credentialJson)
     }
   }
 
   fun inappVerifyPin(pin: String, username: String, action: String?, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(inapp.verifyPin(pin, username, action), callback) {
         JSONObject()
           .put("isVerified", it.isVerified)
@@ -362,13 +343,15 @@ class AuthsignalMaui(
   }
 
   fun inappDeletePin(username: String, callback: AuthsignalMauiCallback) {
-    scope.launch {
+    run(callback) {
       complete(inapp.deletePin(username), callback) { it }
     }
   }
 
   fun inappGetAllPinUsernames(callback: AuthsignalMauiCallback) {
-    complete(inapp.getAllPinUsernames(), callback) { JSONArray(it) }
+    run(callback) {
+      complete(inapp.getAllPinUsernames(), callback) { JSONArray(it) }
+    }
   }
 
   private fun credentialJson(credential: AppCredential): Any =
@@ -382,6 +365,7 @@ class AuthsignalMaui(
   private fun challengeJson(challenge: AppChallenge): Any =
     JSONObject()
       .put("challengeId", challenge.challengeId)
+      .put("userId", challenge.userId)
       .put("actionCode", challenge.actionCode)
       .put("idempotencyKey", challenge.idempotencyKey)
       .put("userAgent", challenge.userAgent)
@@ -406,6 +390,14 @@ class AuthsignalMaui(
       .put("isVerified", response.isVerified)
       .put("token", response.token)
       .put("failureReason", response.failureReason)
+
+  private fun falseIfMissing(response: AuthsignalResponse<Boolean>) =
+    if (response.isEmpty()) AuthsignalResponse(data = false) else response
+
+  private fun <T> notFoundIfMissing(response: AuthsignalResponse<T>) =
+    if (response.isEmpty()) AuthsignalResponse<T>(errorCode = "credential_not_found") else response
+
+  private fun AuthsignalResponse<*>.isEmpty() = data == null && error == null && errorCode == null
 
   private fun <T> complete(
     response: AuthsignalResponse<T>,

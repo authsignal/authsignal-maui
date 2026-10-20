@@ -15,6 +15,10 @@ for destination in "iOS" "iOS Simulator"; do
     -quiet
 done
 
+for platform in iphoneos iphonesimulator; do
+  cp PrivacyInfo.xcprivacy "$DERIVED_DATA/Build/Products/Release-$platform/PackageFrameworks/AuthsignalMaui.framework/"
+done
+
 rm -rf "$OUTPUT"
 
 xcodebuild -create-xcframework \

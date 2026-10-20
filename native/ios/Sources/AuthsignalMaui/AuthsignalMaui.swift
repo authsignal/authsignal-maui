@@ -81,10 +81,11 @@ public class AuthsignalMaui: NSObject {
     }
   }
 
-  @objc(passkeySignInWithAction:token:preferImmediatelyAvailableCredentials:syncCredentials:completion:)
+  @objc(passkeySignInWithAction:token:autofill:preferImmediatelyAvailableCredentials:syncCredentials:completion:)
   public func passkeySignIn(
     action: String?,
     token: String?,
+    autofill: Bool,
     preferImmediatelyAvailableCredentials: Bool,
     syncCredentials: Bool,
     completion: @escaping AuthsignalMauiCompletion
@@ -93,6 +94,7 @@ public class AuthsignalMaui: NSObject {
       let response = await passkey.signIn(
         token: token,
         action: action,
+        autofill: autofill,
         preferImmediatelyAvailableCredentials: preferImmediatelyAvailableCredentials,
         syncCredentials: syncCredentials
       )
@@ -203,7 +205,7 @@ public class AuthsignalMaui: NSObject {
   @objc(pushGetCredential:)
   public func pushGetCredential(_ completion: @escaping AuthsignalMauiCompletion) {
     Task {
-      Self.complete(await push.getCredential(), completion, toJSON: Self.credentialObject)
+      Self.completeOptional(await push.getCredential(), completion, toJSON: Self.credentialObject)
     }
   }
 
@@ -239,7 +241,7 @@ public class AuthsignalMaui: NSObject {
   @objc(pushGetChallenge:)
   public func pushGetChallenge(_ completion: @escaping AuthsignalMauiCompletion) {
     Task {
-      Self.complete(await push.getChallenge(), completion) { challenge in
+      Self.completeOptional(await push.getChallenge(), completion) { challenge in
         challenge.map(Self.challengeObject) ?? NSNull()
       }
     }
@@ -277,7 +279,7 @@ public class AuthsignalMaui: NSObject {
   @objc(qrGetCredential:)
   public func qrGetCredential(_ completion: @escaping AuthsignalMauiCompletion) {
     Task {
-      Self.complete(await qr.getCredential(), completion, toJSON: Self.credentialObject)
+      Self.completeOptional(await qr.getCredential(), completion, toJSON: Self.credentialObject)
     }
   }
 
@@ -342,7 +344,7 @@ public class AuthsignalMaui: NSObject {
   @objc(inappGetCredentialWithUsername:completion:)
   public func inappGetCredential(username: String?, completion: @escaping AuthsignalMauiCompletion) {
     Task {
-      Self.complete(await inapp.getCredential(username: username), completion, toJSON: Self.credentialObject)
+      Self.completeOptional(await inapp.getCredential(username: username), completion, toJSON: Self.credentialObject)
     }
   }
 
@@ -446,6 +448,7 @@ public class AuthsignalMaui: NSObject {
   private static func challengeObject(_ challenge: AppChallenge) -> Any {
     object([
       "challengeId": challenge.challengeId,
+      "userId": challenge.userId,
       "actionCode": challenge.actionCode,
       "idempotencyKey": challenge.idempotencyKey,
       "userAgent": challenge.userAgent,
@@ -475,6 +478,18 @@ public class AuthsignalMaui: NSObject {
       "token": response.token,
       "failureReason": response.failureReason,
     ])
+  }
+
+  private static func completeOptional<T>(
+    _ response: AuthsignalResponse<T>,
+    _ completion: AuthsignalMauiCompletion,
+    toJSON: (T) -> Any
+  ) {
+    if response.error == nil && response.errorCode == "credential_not_found" {
+      completion("null", nil, nil)
+    } else {
+      complete(response, completion, toJSON: toJSON)
+    }
   }
 
   private static func complete<T>(

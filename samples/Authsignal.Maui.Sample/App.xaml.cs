@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace Authsignal.Maui.Sample;
+﻿namespace Authsignal.Maui.Sample;
 
 public partial class App : Application
 {

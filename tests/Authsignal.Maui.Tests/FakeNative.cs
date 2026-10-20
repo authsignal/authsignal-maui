@@ -21,8 +21,8 @@ sealed class FakeNative : INativeAuthsignal
 	public Task<NativeResult> PasskeySignUpAsync(string? token, string? username, string? displayName, bool ignorePasskeyAlreadyExistsError, bool syncCredentials, CancellationToken cancellationToken) =>
 		Complete($"passkeySignUp:{token}:{username}:{displayName}:{ignorePasskeyAlreadyExistsError}:{syncCredentials}", cancellationToken);
 
-	public Task<NativeResult> PasskeySignInAsync(string? action, string? token, bool preferImmediatelyAvailableCredentials, bool syncCredentials, CancellationToken cancellationToken) =>
-		Complete($"passkeySignIn:{action}:{token}:{preferImmediatelyAvailableCredentials}:{syncCredentials}", cancellationToken);
+	public Task<NativeResult> PasskeySignInAsync(string? action, string? token, bool autofill, bool preferImmediatelyAvailableCredentials, bool syncCredentials, CancellationToken cancellationToken) =>
+		Complete($"passkeySignIn:{action}:{token}:{autofill}:{preferImmediatelyAvailableCredentials}:{syncCredentials}", cancellationToken);
 
 	public int CancelCount { get; private set; }
 

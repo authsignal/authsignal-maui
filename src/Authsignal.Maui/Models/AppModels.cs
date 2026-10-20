@@ -63,6 +63,8 @@ public class AppChallenge
 {
 	public required string ChallengeId { get; init; }
 
+	public string? UserId { get; init; }
+
 	public string? ActionCode { get; init; }
 
 	public string? IdempotencyKey { get; init; }

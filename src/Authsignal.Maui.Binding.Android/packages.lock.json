@@ -1179,6 +1179,7 @@
           "Xamarin.KotlinX.Serialization.Core.Jvm": "1.8.1"
         }
       }
-    }
+    },
+    "net10.0-android36.0/iossimulator-arm64": {}
   }
 }

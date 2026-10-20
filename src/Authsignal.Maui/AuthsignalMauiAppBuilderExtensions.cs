@@ -11,6 +11,7 @@ public static class AuthsignalMauiAppBuilderExtensions
 
 		var options = new AuthsignalOptions();
 		configure(options);
+		AuthsignalClient.Validate(options);
 
 		builder.Services.AddSingleton<IAuthsignalClient>(_ => new AuthsignalClient(options));
 
