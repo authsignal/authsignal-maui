@@ -10,6 +10,7 @@ public interface IAuthsignalInApp
 		KeychainAccess? keychainAccess = null,
 		string? username = null,
 		bool performAttestation = false,
+		AndroidUserAuthentication? androidUserAuthentication = null,
 		CancellationToken cancellationToken = default);
 
 	Task<AuthsignalResponse<bool>> RemoveCredentialAsync(string? username = null, CancellationToken cancellationToken = default);
@@ -36,9 +37,14 @@ sealed class AuthsignalInApp(INativeAuthsignal native) : IAuthsignalInApp
 		KeychainAccess? keychainAccess = null,
 		string? username = null,
 		bool performAttestation = false,
-		CancellationToken cancellationToken = default) =>
-		native.InAppAddCredentialAsync(token, requireUserAuthentication, keychainAccess.ToNativeValue(), username, performAttestation, cancellationToken)
+		AndroidUserAuthentication? androidUserAuthentication = null,
+		CancellationToken cancellationToken = default)
+	{
+		var (timeoutSeconds, authorizationType) = androidUserAuthentication.ToNativeValues(requireUserAuthentication);
+
+		return native.InAppAddCredentialAsync(token, requireUserAuthentication, timeoutSeconds, authorizationType, keychainAccess.ToNativeValue(), username, performAttestation, cancellationToken)
 			.ToResponseAsync(AuthsignalJsonContext.Default.AppCredential);
+	}
 
 	public Task<AuthsignalResponse<bool>> RemoveCredentialAsync(string? username = null, CancellationToken cancellationToken = default) =>
 		native.InAppRemoveCredentialAsync(username, cancellationToken).ToResponseAsync(AuthsignalJsonContext.Default.Boolean);

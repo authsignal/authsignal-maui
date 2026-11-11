@@ -41,7 +41,7 @@ sealed class NativeAuthsignal : INativeAuthsignal
 
 	public Task<NativeResult> PushGetCredentialAsync(CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
 
-	public Task<NativeResult> PushAddCredentialAsync(string? token, bool requireUserAuthentication, string? keychainAccess, bool performAttestation, string? pushToken, CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
+	public Task<NativeResult> PushAddCredentialAsync(string? token, bool requireUserAuthentication, int androidTimeoutSeconds, int androidAuthorizationType, string? keychainAccess, bool performAttestation, string? pushToken, CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
 
 	public Task<NativeResult> PushRemoveCredentialAsync(CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
 
@@ -53,7 +53,7 @@ sealed class NativeAuthsignal : INativeAuthsignal
 
 	public Task<NativeResult> QrGetCredentialAsync(CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
 
-	public Task<NativeResult> QrAddCredentialAsync(string? token, bool requireUserAuthentication, string? keychainAccess, bool performAttestation, CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
+	public Task<NativeResult> QrAddCredentialAsync(string? token, bool requireUserAuthentication, int androidTimeoutSeconds, int androidAuthorizationType, string? keychainAccess, bool performAttestation, CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
 
 	public Task<NativeResult> QrRemoveCredentialAsync(CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
 
@@ -63,7 +63,7 @@ sealed class NativeAuthsignal : INativeAuthsignal
 
 	public Task<NativeResult> InAppGetCredentialAsync(string? username, CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
 
-	public Task<NativeResult> InAppAddCredentialAsync(string? token, bool requireUserAuthentication, string? keychainAccess, string? username, bool performAttestation, CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
+	public Task<NativeResult> InAppAddCredentialAsync(string? token, bool requireUserAuthentication, int androidTimeoutSeconds, int androidAuthorizationType, string? keychainAccess, string? username, bool performAttestation, CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
 
 	public Task<NativeResult> InAppRemoveCredentialAsync(string? username, CancellationToken cancellationToken) => throw new PlatformNotSupportedException();
 

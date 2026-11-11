@@ -2,6 +2,7 @@ package com.authsignal.maui
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import com.authsignal.AuthsignalRequestMetadata
 import com.authsignal.DeviceCache
 import com.authsignal.TokenCache
@@ -219,9 +220,30 @@ class AuthsignalMaui(
     }
   }
 
-  fun pushAddCredential(token: String?, performAttestation: Boolean, pushToken: String?, callback: AuthsignalMauiCallback) {
+  fun pushAddCredential(
+    token: String?,
+    userAuthenticationRequired: Boolean,
+    timeout: Int,
+    authorizationType: Int,
+    performAttestation: Boolean,
+    pushToken: String?,
+    callback: AuthsignalMauiCallback,
+  ) {
     run(callback) {
-      complete(push.addCredential(token = token, performAttestation = performAttestation, pushToken = pushToken), callback, ::credentialJson)
+      if (rejectUnsupportedUserAuthentication(userAuthenticationRequired, callback)) return@run
+
+      complete(
+        push.addCredential(
+          token = token,
+          userAuthenticationRequired = userAuthenticationRequired,
+          timeout = timeout,
+          authorizationType = authorizationType,
+          performAttestation = performAttestation,
+          pushToken = pushToken,
+        ),
+        callback,
+        ::credentialJson,
+      )
     }
   }
 
@@ -262,9 +284,28 @@ class AuthsignalMaui(
     }
   }
 
-  fun qrAddCredential(token: String?, performAttestation: Boolean, callback: AuthsignalMauiCallback) {
+  fun qrAddCredential(
+    token: String?,
+    userAuthenticationRequired: Boolean,
+    timeout: Int,
+    authorizationType: Int,
+    performAttestation: Boolean,
+    callback: AuthsignalMauiCallback,
+  ) {
     run(callback) {
-      complete(qr.addCredential(token = token, performAttestation = performAttestation), callback, ::credentialJson)
+      if (rejectUnsupportedUserAuthentication(userAuthenticationRequired, callback)) return@run
+
+      complete(
+        qr.addCredential(
+          token = token,
+          userAuthenticationRequired = userAuthenticationRequired,
+          timeout = timeout,
+          authorizationType = authorizationType,
+          performAttestation = performAttestation,
+        ),
+        callback,
+        ::credentialJson,
+      )
     }
   }
 
@@ -301,9 +342,30 @@ class AuthsignalMaui(
     }
   }
 
-  fun inappAddCredential(token: String?, username: String?, performAttestation: Boolean, callback: AuthsignalMauiCallback) {
+  fun inappAddCredential(
+    token: String?,
+    userAuthenticationRequired: Boolean,
+    timeout: Int,
+    authorizationType: Int,
+    username: String?,
+    performAttestation: Boolean,
+    callback: AuthsignalMauiCallback,
+  ) {
     run(callback) {
-      complete(inapp.addCredential(token = token, username = username, performAttestation = performAttestation), callback, ::credentialJson)
+      if (rejectUnsupportedUserAuthentication(userAuthenticationRequired, callback)) return@run
+
+      complete(
+        inapp.addCredential(
+          token = token,
+          userAuthenticationRequired = userAuthenticationRequired,
+          timeout = timeout,
+          authorizationType = authorizationType,
+          username = username,
+          performAttestation = performAttestation,
+        ),
+        callback,
+        ::credentialJson,
+      )
     }
   }
 
@@ -396,6 +458,21 @@ class AuthsignalMaui(
 
   private fun <T> notFoundIfMissing(response: AuthsignalResponse<T>) =
     if (response.isEmpty()) AuthsignalResponse<T>(errorCode = "credential_not_found") else response
+
+  private fun rejectUnsupportedUserAuthentication(
+    userAuthenticationRequired: Boolean,
+    callback: AuthsignalMauiCallback,
+  ): Boolean {
+    if (!userAuthenticationRequired || Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) return false
+
+    callback.onComplete(
+      null,
+      "user_authentication_not_supported",
+      "requireUserAuthentication needs Android 11 (API 30) or newer.",
+    )
+
+    return true
+  }
 
   private fun AuthsignalResponse<*>.isEmpty() = data == null && error == null && errorCode == null
 

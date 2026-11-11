@@ -52,7 +52,7 @@ sealed class FakeNative : INativeAuthsignal
 
 	public Task<NativeResult> PushGetCredentialAsync(CancellationToken cancellationToken) => Complete("pushGetCredential", cancellationToken);
 
-	public Task<NativeResult> PushAddCredentialAsync(string? token, bool requireUserAuthentication, string? keychainAccess, bool performAttestation, string? pushToken, CancellationToken cancellationToken) => Complete($"pushAddCredential:{token}:{requireUserAuthentication}:{keychainAccess}:{performAttestation}:{pushToken}", cancellationToken);
+	public Task<NativeResult> PushAddCredentialAsync(string? token, bool requireUserAuthentication, int androidTimeoutSeconds, int androidAuthorizationType, string? keychainAccess, bool performAttestation, string? pushToken, CancellationToken cancellationToken) => Complete($"pushAddCredential:{token}:{requireUserAuthentication}:{androidTimeoutSeconds}:{androidAuthorizationType}:{keychainAccess}:{performAttestation}:{pushToken}", cancellationToken);
 
 	public Task<NativeResult> PushRemoveCredentialAsync(CancellationToken cancellationToken) => Complete("pushRemoveCredential", cancellationToken);
 
@@ -64,7 +64,7 @@ sealed class FakeNative : INativeAuthsignal
 
 	public Task<NativeResult> QrGetCredentialAsync(CancellationToken cancellationToken) => Complete("qrGetCredential", cancellationToken);
 
-	public Task<NativeResult> QrAddCredentialAsync(string? token, bool requireUserAuthentication, string? keychainAccess, bool performAttestation, CancellationToken cancellationToken) => Complete($"qrAddCredential:{token}:{requireUserAuthentication}:{keychainAccess}:{performAttestation}", cancellationToken);
+	public Task<NativeResult> QrAddCredentialAsync(string? token, bool requireUserAuthentication, int androidTimeoutSeconds, int androidAuthorizationType, string? keychainAccess, bool performAttestation, CancellationToken cancellationToken) => Complete($"qrAddCredential:{token}:{requireUserAuthentication}:{androidTimeoutSeconds}:{androidAuthorizationType}:{keychainAccess}:{performAttestation}", cancellationToken);
 
 	public Task<NativeResult> QrRemoveCredentialAsync(CancellationToken cancellationToken) => Complete("qrRemoveCredential", cancellationToken);
 
@@ -74,7 +74,7 @@ sealed class FakeNative : INativeAuthsignal
 
 	public Task<NativeResult> InAppGetCredentialAsync(string? username, CancellationToken cancellationToken) => Complete($"inappGetCredential:{username}", cancellationToken);
 
-	public Task<NativeResult> InAppAddCredentialAsync(string? token, bool requireUserAuthentication, string? keychainAccess, string? username, bool performAttestation, CancellationToken cancellationToken) => Complete($"inappAddCredential:{token}:{requireUserAuthentication}:{keychainAccess}:{username}:{performAttestation}", cancellationToken);
+	public Task<NativeResult> InAppAddCredentialAsync(string? token, bool requireUserAuthentication, int androidTimeoutSeconds, int androidAuthorizationType, string? keychainAccess, string? username, bool performAttestation, CancellationToken cancellationToken) => Complete($"inappAddCredential:{token}:{requireUserAuthentication}:{androidTimeoutSeconds}:{androidAuthorizationType}:{keychainAccess}:{username}:{performAttestation}", cancellationToken);
 
 	public Task<NativeResult> InAppRemoveCredentialAsync(string? username, CancellationToken cancellationToken) => Complete($"inappRemoveCredential:{username}", cancellationToken);
 

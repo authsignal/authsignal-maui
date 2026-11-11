@@ -254,13 +254,13 @@ public class AuthsignalClientTests
 	{
 		native.Result = new("{\"credentialId\":\"c\",\"createdAt\":\"2026-10-19T00:00:00Z\",\"userId\":\"u\",\"expiresAt\":\"2026-11-19T00:00:00Z\"}", null, null);
 
-		var response = await Client.Push.AddCredentialAsync("token", true, KeychainAccess.AfterFirstUnlock, true, "push-token", TestContext.Current.CancellationToken);
+		var response = await Client.Push.AddCredentialAsync("token", true, KeychainAccess.AfterFirstUnlock, true, "push-token", cancellationToken: TestContext.Current.CancellationToken);
 
 		Assert.Equal("c", response.Data!.CredentialId);
 		Assert.Equal("u", response.Data.UserId);
 		Assert.Null(response.Data.LastAuthenticatedAt);
 		Assert.Equal("2026-11-19T00:00:00Z", response.Data.ExpiresAt);
-		Assert.Equal("pushAddCredential:token:True:afterFirstUnlock:True:push-token", Assert.Single(native.Calls));
+		Assert.Equal("pushAddCredential:token:True:15:3:afterFirstUnlock:True:push-token", Assert.Single(native.Calls));
 	}
 
 	[Fact]
@@ -271,7 +271,40 @@ public class AuthsignalClientTests
 		await Client.Qr.AddCredentialAsync(cancellationToken: TestContext.Current.CancellationToken);
 		await Client.InApp.AddCredentialAsync(keychainAccess: KeychainAccess.WhenPasscodeSetThisDeviceOnly, username: "pin-user", cancellationToken: TestContext.Current.CancellationToken);
 
-		Assert.Equal(["qrAddCredential::False::False", "inappAddCredential::False:whenPasscodeSetThisDeviceOnly:pin-user:False"], native.Calls);
+		Assert.Equal(["qrAddCredential::False:0:0::False", "inappAddCredential::False:0:0:whenPasscodeSetThisDeviceOnly:pin-user:False"], native.Calls);
+	}
+
+	[Fact]
+	public async Task PassesAndroidUserAuthentication()
+	{
+		native.Result = new("{\"credentialId\":\"c\",\"createdAt\":\"t\",\"userId\":\"u\"}", null, null);
+
+		await Client.InApp.AddCredentialAsync(
+			requireUserAuthentication: true,
+			androidUserAuthentication: new() { TimeoutSeconds = 5, Authenticators = AndroidAuthenticators.BiometricStrong },
+			cancellationToken: TestContext.Current.CancellationToken);
+
+		await Client.Qr.AddCredentialAsync(
+			androidUserAuthentication: new() { TimeoutSeconds = 5 },
+			cancellationToken: TestContext.Current.CancellationToken);
+
+		Assert.Equal(["inappAddCredential::True:5:1:::False", "qrAddCredential::False:0:0::False"], native.Calls);
+	}
+
+	[Fact]
+	public async Task RejectsInvalidAndroidUserAuthentication()
+	{
+		await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => Client.Push.AddCredentialAsync(
+			requireUserAuthentication: true,
+			androidUserAuthentication: new() { TimeoutSeconds = 0 },
+			cancellationToken: TestContext.Current.CancellationToken));
+
+		await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => Client.Push.AddCredentialAsync(
+			requireUserAuthentication: true,
+			androidUserAuthentication: new() { Authenticators = 0 },
+			cancellationToken: TestContext.Current.CancellationToken));
+
+		Assert.Empty(native.Calls);
 	}
 
 	[Fact]
@@ -393,6 +426,6 @@ public class AuthsignalClientTests
 	[Fact]
 	public void ReadsVersionFromAssembly()
 	{
-		Assert.Equal("0.1.0", AuthsignalClient.Version);
+		Assert.Equal("0.2.0", AuthsignalClient.Version);
 	}
 }

@@ -57,7 +57,7 @@ sealed class NativeAuthsignal(AuthsignalOptions options) : INativeAuthsignal
 	public Task<NativeResult> PushGetCredentialAsync(CancellationToken cancellationToken) =>
 		Invoke(completion => native.PushGetCredential(completion), cancellationToken);
 
-	public Task<NativeResult> PushAddCredentialAsync(string? token, bool requireUserAuthentication, string? keychainAccess, bool performAttestation, string? pushToken, CancellationToken cancellationToken) =>
+	public Task<NativeResult> PushAddCredentialAsync(string? token, bool requireUserAuthentication, int androidTimeoutSeconds, int androidAuthorizationType, string? keychainAccess, bool performAttestation, string? pushToken, CancellationToken cancellationToken) =>
 		Invoke(completion => native.PushAddCredential(token, requireUserAuthentication, keychainAccess, performAttestation, pushToken, completion), cancellationToken);
 
 	public Task<NativeResult> PushRemoveCredentialAsync(CancellationToken cancellationToken) =>
@@ -75,7 +75,7 @@ sealed class NativeAuthsignal(AuthsignalOptions options) : INativeAuthsignal
 	public Task<NativeResult> QrGetCredentialAsync(CancellationToken cancellationToken) =>
 		Invoke(completion => native.QrGetCredential(completion), cancellationToken);
 
-	public Task<NativeResult> QrAddCredentialAsync(string? token, bool requireUserAuthentication, string? keychainAccess, bool performAttestation, CancellationToken cancellationToken) =>
+	public Task<NativeResult> QrAddCredentialAsync(string? token, bool requireUserAuthentication, int androidTimeoutSeconds, int androidAuthorizationType, string? keychainAccess, bool performAttestation, CancellationToken cancellationToken) =>
 		Invoke(completion => native.QrAddCredential(token, requireUserAuthentication, keychainAccess, performAttestation, completion), cancellationToken);
 
 	public Task<NativeResult> QrRemoveCredentialAsync(CancellationToken cancellationToken) =>
@@ -90,7 +90,7 @@ sealed class NativeAuthsignal(AuthsignalOptions options) : INativeAuthsignal
 	public Task<NativeResult> InAppGetCredentialAsync(string? username, CancellationToken cancellationToken) =>
 		Invoke(completion => native.InAppGetCredential(username, completion), cancellationToken);
 
-	public Task<NativeResult> InAppAddCredentialAsync(string? token, bool requireUserAuthentication, string? keychainAccess, string? username, bool performAttestation, CancellationToken cancellationToken) =>
+	public Task<NativeResult> InAppAddCredentialAsync(string? token, bool requireUserAuthentication, int androidTimeoutSeconds, int androidAuthorizationType, string? keychainAccess, string? username, bool performAttestation, CancellationToken cancellationToken) =>
 		Invoke(completion => native.InAppAddCredential(token, requireUserAuthentication, keychainAccess, username, performAttestation, completion), cancellationToken);
 
 	public Task<NativeResult> InAppRemoveCredentialAsync(string? username, CancellationToken cancellationToken) =>
