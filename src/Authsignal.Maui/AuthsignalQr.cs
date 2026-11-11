@@ -9,6 +9,7 @@ public interface IAuthsignalQr
 		bool requireUserAuthentication = false,
 		KeychainAccess? keychainAccess = null,
 		bool performAttestation = false,
+		AndroidUserAuthentication? androidUserAuthentication = null,
 		CancellationToken cancellationToken = default);
 
 	Task<AuthsignalResponse<bool>> RemoveCredentialAsync(CancellationToken cancellationToken = default);
@@ -28,9 +29,14 @@ sealed class AuthsignalQr(INativeAuthsignal native) : IAuthsignalQr
 		bool requireUserAuthentication = false,
 		KeychainAccess? keychainAccess = null,
 		bool performAttestation = false,
-		CancellationToken cancellationToken = default) =>
-		native.QrAddCredentialAsync(token, requireUserAuthentication, keychainAccess.ToNativeValue(), performAttestation, cancellationToken)
+		AndroidUserAuthentication? androidUserAuthentication = null,
+		CancellationToken cancellationToken = default)
+	{
+		var (timeoutSeconds, authorizationType) = androidUserAuthentication.ToNativeValues(requireUserAuthentication);
+
+		return native.QrAddCredentialAsync(token, requireUserAuthentication, timeoutSeconds, authorizationType, keychainAccess.ToNativeValue(), performAttestation, cancellationToken)
 			.ToResponseAsync(AuthsignalJsonContext.Default.AppCredential);
+	}
 
 	public Task<AuthsignalResponse<bool>> RemoveCredentialAsync(CancellationToken cancellationToken = default) =>
 		native.QrRemoveCredentialAsync(cancellationToken).ToResponseAsync(AuthsignalJsonContext.Default.Boolean);

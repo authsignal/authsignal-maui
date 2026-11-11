@@ -38,7 +38,7 @@ interface INativeAuthsignal
 
 	Task<NativeResult> PushGetCredentialAsync(CancellationToken cancellationToken);
 
-	Task<NativeResult> PushAddCredentialAsync(string? token, bool requireUserAuthentication, string? keychainAccess, bool performAttestation, string? pushToken, CancellationToken cancellationToken);
+	Task<NativeResult> PushAddCredentialAsync(string? token, bool requireUserAuthentication, int androidTimeoutSeconds, int androidAuthorizationType, string? keychainAccess, bool performAttestation, string? pushToken, CancellationToken cancellationToken);
 
 	Task<NativeResult> PushRemoveCredentialAsync(CancellationToken cancellationToken);
 
@@ -50,7 +50,7 @@ interface INativeAuthsignal
 
 	Task<NativeResult> QrGetCredentialAsync(CancellationToken cancellationToken);
 
-	Task<NativeResult> QrAddCredentialAsync(string? token, bool requireUserAuthentication, string? keychainAccess, bool performAttestation, CancellationToken cancellationToken);
+	Task<NativeResult> QrAddCredentialAsync(string? token, bool requireUserAuthentication, int androidTimeoutSeconds, int androidAuthorizationType, string? keychainAccess, bool performAttestation, CancellationToken cancellationToken);
 
 	Task<NativeResult> QrRemoveCredentialAsync(CancellationToken cancellationToken);
 
@@ -60,7 +60,7 @@ interface INativeAuthsignal
 
 	Task<NativeResult> InAppGetCredentialAsync(string? username, CancellationToken cancellationToken);
 
-	Task<NativeResult> InAppAddCredentialAsync(string? token, bool requireUserAuthentication, string? keychainAccess, string? username, bool performAttestation, CancellationToken cancellationToken);
+	Task<NativeResult> InAppAddCredentialAsync(string? token, bool requireUserAuthentication, int androidTimeoutSeconds, int androidAuthorizationType, string? keychainAccess, string? username, bool performAttestation, CancellationToken cancellationToken);
 
 	Task<NativeResult> InAppRemoveCredentialAsync(string? username, CancellationToken cancellationToken);
 

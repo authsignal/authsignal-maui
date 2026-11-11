@@ -15,6 +15,46 @@ public enum KeychainAccess
 	WhenPasscodeSetThisDeviceOnly,
 }
 
+[Flags]
+public enum AndroidAuthenticators
+{
+	BiometricStrong = 1,
+
+	DeviceCredential = 2,
+}
+
+public sealed class AndroidUserAuthentication
+{
+	public int TimeoutSeconds { get; init; } = 15;
+
+	public AndroidAuthenticators Authenticators { get; init; } = AndroidAuthenticators.BiometricStrong | AndroidAuthenticators.DeviceCredential;
+}
+
+static class AndroidUserAuthenticationExtensions
+{
+	public static (int TimeoutSeconds, int AuthorizationType) ToNativeValues(this AndroidUserAuthentication? value, bool requireUserAuthentication)
+	{
+		if (!requireUserAuthentication)
+		{
+			return (0, 0);
+		}
+
+		value ??= new AndroidUserAuthentication();
+
+		if (value.TimeoutSeconds <= 0)
+		{
+			throw new ArgumentOutOfRangeException(nameof(value), value.TimeoutSeconds, "TimeoutSeconds must be greater than 0.");
+		}
+
+		if (value.Authenticators == 0)
+		{
+			throw new ArgumentOutOfRangeException(nameof(value), value.Authenticators, "At least one authenticator is required.");
+		}
+
+		return (value.TimeoutSeconds, (int)value.Authenticators);
+	}
+}
+
 static class KeychainAccessExtensions
 {
 	public static string? ToNativeValue(this KeychainAccess? value) => value switch
