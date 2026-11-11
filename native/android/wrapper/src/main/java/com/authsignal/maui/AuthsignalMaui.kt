@@ -459,8 +459,6 @@ class AuthsignalMaui(
   private fun <T> notFoundIfMissing(response: AuthsignalResponse<T>) =
     if (response.isEmpty()) AuthsignalResponse<T>(errorCode = "credential_not_found") else response
 
-  // Below API 30 the native SDK can't set an auth timeout, so the key would need a
-  // BiometricPrompt CryptoObject for every signature and verify would always fail.
   private fun rejectUnsupportedUserAuthentication(
     userAuthenticationRequired: Boolean,
     callback: AuthsignalMauiCallback,

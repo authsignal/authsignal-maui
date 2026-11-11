@@ -55,25 +55,6 @@ For more detailed info on how to add passkeys to your app using Authsignal, chec
 
 To see how to add app verification with push notifications or QR codes, see our [app verification documentation for Mobile SDKs](https://docs.authsignal.com/authentication-methods/app-verification/push).
 
-### Requiring user authentication
-
-`AddCredentialAsync` on `Push`, `Qr` and `InApp` takes `requireUserAuthentication`. When it's `true`, the device key can only sign after the user authenticates with biometrics or the device passcode.
-
-- **iOS:** the system shows the Face ID / Touch ID / passcode prompt each time the key signs.
-- **Android:** the SDK doesn't show a prompt. The key can sign for `TimeoutSeconds` after the user last authenticated, so show a `BiometricPrompt` in your app (or ask the user to unlock their device) right before you call a method that signs with the key: `InApp.VerifyAsync`, `Push.GetChallengeAsync`, `Push.UpdateChallengeAsync`, `Qr.ClaimChallengeAsync`, `Qr.UpdateChallengeAsync`, `Push.UpdateCredentialAsync`, or `RemoveCredentialAsync`. Requires Android 11 (API 30) or newer; older versions return `user_authentication_not_supported`.
-
-```csharp
-await authsignal.InApp.AddCredentialAsync(
-    requireUserAuthentication: true,
-    androidUserAuthentication: new AndroidUserAuthentication
-    {
-        TimeoutSeconds = 15, // default
-        Authenticators = AndroidAuthenticators.BiometricStrong | AndroidAuthenticators.DeviceCredential, // default
-    });
-```
-
-`androidUserAuthentication` is ignored on iOS and when `requireUserAuthentication` is `false`.
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
