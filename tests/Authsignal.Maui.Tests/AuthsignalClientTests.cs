@@ -426,6 +426,6 @@ public class AuthsignalClientTests
 	[Fact]
 	public void ReadsVersionFromAssembly()
 	{
-		Assert.Equal("0.2.0", AuthsignalClient.Version);
+		Assert.Equal("0.3.0", AuthsignalClient.Version);
 	}
 }

@@ -14,7 +14,7 @@ let package = Package(
       targets: ["AuthsignalMaui"])
   ],
   dependencies: [
-    .package(url: "https://github.com/authsignal/authsignal-ios", exact: "2.13.3")
+    .package(url: "https://github.com/authsignal/authsignal-ios", exact: "2.14.1")
   ],
   targets: [
     .target(

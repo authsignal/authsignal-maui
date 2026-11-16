@@ -31,10 +31,10 @@ val bundled: Configuration by configurations.creating {
 }
 
 dependencies {
-  implementation("com.authsignal:authsignal-android:4.3.2")
+  implementation("com.authsignal:authsignal-android:4.4.1")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
-  bundled("com.authsignal:authsignal-android:4.3.2")
+  bundled("com.authsignal:authsignal-android:4.4.1")
 }
 
 val bundledGroups = setOf("com.authsignal", "io.ktor", "org.slf4j")
